@@ -1,18 +1,18 @@
 /*
-  GAME NAME: http://www.team-arg.org/dummy-manual.html
+  PICO RACER: http://www.team-arg.org/race-manual.html
 
-  Arduboy version 0.1:  http://www.team-arg.org/dummy-downloads.html
+  Arduboy version 0.1:  http://www.team-arg.org/race-downloads.html
 
   MADE by TEAM a.r.g. : http://www.team-arg.org/more-about.html
 
-  2016 - JO3RI
+  2016 - JO3RI - PixelArtM
 
   License: MIT : https://opensource.org/licenses/MIT
 
 */
 
 //determine the game
-#define GAME_ID 00
+#define GAME_ID 43
 
 #include "Arglib.h"
 #include "globals.h"
