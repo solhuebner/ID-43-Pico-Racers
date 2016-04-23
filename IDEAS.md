@@ -1,1 +1,1 @@
-ideas for the game "template"
+ideas for the game Pico Racers
