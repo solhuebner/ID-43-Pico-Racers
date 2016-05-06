@@ -19,9 +19,8 @@
 #include "menu.h"
 #include "game.h"
 #include "inputs.h"
-#include "player.h"
+#include "cars.h"
 #include "elements.h"
-#include "enemies.h"
 
 typedef void (*FunctionPointer) ();
 

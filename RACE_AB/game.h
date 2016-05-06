@@ -4,8 +4,7 @@
 #include <Arduino.h>
 #include "globals.h"
 #include "inputs.h"
-#include "player.h"
-#include "enemies.h"
+#include "cars.h"
 #include "elements.h"
 
 
@@ -20,6 +19,7 @@ void stateGamePrepareLevel()
 void stateGameNextLevel()
 {
   gameState = STATE_GAME_PLAYING;
+  player.set();
 };
 
 

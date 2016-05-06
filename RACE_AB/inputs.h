@@ -3,38 +3,29 @@
 
 #include <Arduino.h>
 #include "globals.h"
-#include "player.h"
+#include "cars.h"
 
 void checkInputs()
 {
-  player.walking = false;
-  if (buttons.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
-  {
-    player.direction = FACING_SOUTH;
-    player.y++;
-    player.walking = true;
-  }
-  if (buttons.pressed(LEFT_BUTTON) && (player.x > GAME_LEFT))
-  {
-    player.direction = FACING_WEST;
-    player.x--;
-    player.walking = true;
-  }
+  player.frame = carTypes[player.type] + 1;
+
   if (buttons.pressed(UP_BUTTON) && (player.y > GAME_TOP))
   {
-    player.direction = FACING_NORTH;
+    player.frame = carTypes[player.type];
     player.y--;
-    player.walking = true;
   }
-  if (buttons.pressed(RIGHT_BUTTON) && (player.x < GAME_RIGHT))
+  if (buttons.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
   {
-    player.direction = FACING_EAST;
-    player.x++;
-    player.walking = true;
+    player.frame = carTypes[player.type] + 2;
+    player.y++;
   }
 
   if (buttons.justPressed(A_BUTTON)) gameState = STATE_GAME_PAUSE;
-  if (buttons.justPressed(B_BUTTON));
+  if (buttons.justPressed(B_BUTTON))
+  {
+    player.type++;
+    if (player.type > 5) player.type = 0;
+  }
 }
 
 
