@@ -9,19 +9,19 @@ void checkInputs()
 {
   player.frame = carTypes[player.type] + 1;
 
-  if (buttons.pressed(UP_BUTTON) && (player.y > GAME_TOP))
+  if (arduboy.pressed(UP_BUTTON) && (player.y > GAME_TOP))
   {
     player.frame = carTypes[player.type];
     player.y--;
   }
-  if (buttons.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
+  if (arduboy.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
   {
     player.frame = carTypes[player.type] + 2;
     player.y++;
   }
 
-  if (buttons.justPressed(A_BUTTON)) gameState = STATE_GAME_PAUSE;
-  if (buttons.justPressed(B_BUTTON))
+  if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PAUSE;
+  if (arduboy.justPressed(B_BUTTON))
   {
     player.type++;
     if (player.type > 5) player.type = 0;

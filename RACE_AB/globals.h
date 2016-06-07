@@ -25,15 +25,15 @@
 #define GAME_LEFT                    0
 #define GAME_RIGHT                   112
 
+#define LEVEL_TO_START_WITH          1
+
 Arduboy arduboy;
 Sprites sprites(arduboy);
-SimpleButtons buttons (arduboy);
 
-unsigned char gameState;
-boolean soundYesNo;
-int menuSelection;
-byte counter = 0;
-byte level;
+byte gameState = STATE_MENU_INTRO;   // start the game with the TEAM a.r.g. logo
+byte menuSelection = STATE_MENU_PLAY; // PLAY menu item is pre-selected
+byte globalCounter = 0;
+byte level = LEVEL_TO_START_WITH;
 unsigned long scorePlayer; 
 
 #endif

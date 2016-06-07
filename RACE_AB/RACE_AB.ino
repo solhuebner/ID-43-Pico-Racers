@@ -21,10 +21,11 @@
 #include "inputs.h"
 #include "cars.h"
 #include "elements.h"
+#include "tracks.h"
 
 typedef void (*FunctionPointer) ();
 
-FunctionPointer mainGameLoop[] = {
+const FunctionPointer PROGMEM mainGameLoop[] = {
   stateMenuIntro,
   stateMenuMain,
   stateMenuHelp,
@@ -42,20 +43,14 @@ FunctionPointer mainGameLoop[] = {
 void setup() {
   arduboy.start();
   arduboy.setFrameRate(60);                                 // set the frame rate of the game at 60 fps
-  gameState = STATE_MENU_INTRO;                             // start the game with the TEAM a.r.g. logo
-  menuSelection = STATE_MENU_PLAY;                          // PLAY menu item is pre-selected
-  if (EEPROM.read(EEPROM_AUDIO_ON_OFF)) soundYesNo = true;  // check EEPROM if sound is OFF or ON
-  arduboy.initRandomSeed();
 }
 
 
 void loop() {
   if (!(arduboy.nextFrame())) return;
-  buttons.poll();
-  if (soundYesNo == true) arduboy.audio.on();
-  else arduboy.audio.off();
+  arduboy.poll();
   arduboy.clearDisplay();
-  mainGameLoop[gameState]();
+  ((FunctionPointer) pgm_read_word (&mainGameLoop[gameState]))();
   arduboy.display();
 }
 

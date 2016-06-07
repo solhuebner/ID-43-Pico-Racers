@@ -6,6 +6,7 @@
 #include "inputs.h"
 #include "cars.h"
 #include "elements.h"
+#include "tracks.h"
 
 
 void stateGamePrepareLevel()
@@ -26,12 +27,13 @@ void stateGameNextLevel()
 void stateGamePlaying()
 {
   checkInputs();
+  drawTheRoad();
   drawPlayer();
 };
 
 void stateGamePause()
 {
-  if (buttons.justPressed(A_BUTTON)) gameState = STATE_GAME_PLAYING;
+  if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PLAYING;
 };
 
 void stateGameOver()
