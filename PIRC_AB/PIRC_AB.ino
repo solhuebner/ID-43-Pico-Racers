@@ -1,11 +1,11 @@
 /*
   PICO RACER: http://www.team-arg.org/race-manual.html
 
-  Arduboy version 0.1:  http://www.team-arg.org/race-downloads.html
+  Arduboy version 0.1:  http://www.team-arg.org/pirc-downloads.html
 
   MADE by TEAM a.r.g. : http://www.team-arg.org/more-about.html
 
-  2016 - JO3RI - PixelArtM
+  2016 - emuty - PixelArtM - JO3RI
 
   License: MIT : https://opensource.org/licenses/MIT
 
