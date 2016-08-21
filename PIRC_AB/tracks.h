@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include "globals.h"
+#include "road.h"
 
 #define TOTAL_AMOUNT_OF_LEVELS  2
 #define TOTAL_AMOUNT_OF_ROADPARTS   1
@@ -10,6 +11,8 @@
 void drawTheRoad()
 {
   
+  // scroll test
+  arduboy.scrollRoad(roadData,sizeof(roadData));
 }
 
 

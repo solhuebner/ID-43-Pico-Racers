@@ -1,4 +1,5 @@
 #include "Arglib.h"
+#include "road.h"
 
 Arduboy::Arduboy() { }
 
@@ -1280,3 +1281,49 @@ bool Arduboy::collide(Rect rect1, Rect rect2)
             rect2.y + rect2.height  <=  rect1.y);
 }
 
+
+////////////////////////////////////////////////
+// This function is only used in Pico Racers //
+////////////////////////////////////////////////
+void Arduboy::scrollRoad(const uint8_t *roadData, uint8_t data_limit)
+{
+  static uint8_t data_pos = 0;
+  static uint8_t data_start_byte = 0;
+      
+  uint8_t dpos = data_pos;
+  uint8_t dbyte = data_start_byte;
+  uint8_t rd, rp;
+  
+  // road end
+  if(dpos > (data_limit - 16)){
+    dpos = data_limit - 16;
+    dbyte  = 0;
+  }
+  
+  for(uint8_t c = 0; c < (WIDTH - 1); c++){
+    uint8_t rd = pgm_read_byte_near(roadData + dpos);
+    if(rd == 0){
+      rp = 0x00;
+    }else{
+      rd--;
+      rp = pgm_read_byte_near(roadParts + (rd * 8) + dbyte);
+    }
+    //rp= 0x33;
+    sBuffer[c] = rp;
+    dbyte++;
+    if(dbyte == 8){
+      dbyte = 0;
+      dpos++;
+    }
+  }
+  
+  data_start_byte++;
+  if(data_start_byte == 8){
+    data_start_byte = 0;
+    data_pos++;
+  }
+
+
+
+
+}
