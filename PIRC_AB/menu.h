@@ -6,6 +6,7 @@
 
 byte moveOnY[] = {0, 1, 2, 1};
 byte moveOnYFrame = 0;
+byte lineFrame = 0;
 
 void titleScreen()
 {
@@ -16,10 +17,11 @@ void titleScreen()
 void titleRoad()
 {
   if (arduboy.everyXFrames(12)) moveOnYFrame = (++moveOnYFrame) % 4;
-  for (byte i = 0; i < 5; i++) sprites.drawSelfMasked(8 + (33 * i) - (8*moveOnYFrame) , 44, roadLine, 0);
+  if (arduboy.everyXFrames(1)) lineFrame = (++lineFrame) % 32;
+  for (byte i = 0; i < 5; i++) sprites.drawSelfMasked(8 + (33 * i) - lineFrame , 45, roadLine, 0);
   sprites.drawSelfMasked(23, 34, bigCarSmokeOne, moveOnYFrame);
   sprites.drawSelfMasked(23, 48, bigCarSmokeTwo, moveOnYFrame);
-  for (byte i = 0; i < 6; i++)sprites.drawOverwrite(35 + (7*i), 41, roadMask, 0);
+  for (byte i = 0; i < 6; i++)sprites.drawOverwrite(35 + (7 * i), 42, roadMask, 0);
   sprites.drawSelfMasked(36, 33 + moveOnY[moveOnYFrame], bigCar, 0);
 }
 
@@ -51,6 +53,13 @@ void stateMenuMain()
     }
     }
   */
+
+  for (byte i = 0; i < 4; i++)
+  {
+    if (((2 + i) - menuSelection) != 0) sprites.drawSelfMasked(108, 16 + (9 * i), menuText, i);
+    if (((2 + i) - menuSelection) == 0) sprites.drawSelfMasked(105, 16 + (9 * i), menuText, i);
+  }
+
   if (arduboy.justPressed(DOWN_BUTTON) && (menuSelection < 5)) menuSelection++;
   if (arduboy.justPressed(UP_BUTTON) && (menuSelection > 2)) menuSelection--;
   if (arduboy.justPressed(B_BUTTON)) gameState = menuSelection;
