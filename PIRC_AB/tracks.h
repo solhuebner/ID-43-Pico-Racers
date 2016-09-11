@@ -12,7 +12,7 @@ void drawTheRoad()
 {
   
   // scroll test
-  arduboy.scrollRoad(roadData,sizeof(roadData));
+  arduboy.scrollRoad();
 }
 
 

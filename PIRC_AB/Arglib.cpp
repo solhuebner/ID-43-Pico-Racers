@@ -1285,45 +1285,98 @@ bool Arduboy::collide(Rect rect1, Rect rect2)
 ////////////////////////////////////////////////
 // This function is only used in Pico Racers //
 ////////////////////////////////////////////////
-void Arduboy::scrollRoad(const uint8_t *roadData, uint8_t data_limit)
+void Arduboy::scrollRoad()
 {
-  static uint8_t data_pos = 0;
-  static uint8_t data_start_byte = 0;
-      
-  uint8_t dpos = data_pos;
-  uint8_t dbyte = data_start_byte;
-  uint8_t rd, rp;
+  static uint8_t road_pos = 0;
+  static uint8_t road_len = 0;
+  static uint8_t shift = 0;
   
-  // road end
-  if(dpos > (data_limit - 16)){
-    dpos = data_limit - 16;
-    dbyte  = 0;
+  // init
+  if(road_len == 0){
+    road_len = pgm_read_byte_near(roadData);
+    road_pos = 1;
   }
-  
-  for(uint8_t c = 0; c < (WIDTH - 1); c++){
-    uint8_t rd = pgm_read_byte_near(roadData + dpos);
-    if(rd == 0){
-      rp = 0x00;
-    }else{
-      rd--;
-      rp = pgm_read_byte_near(roadParts + (rd * 8) + dbyte);
+
+  // check end data
+  if((road_pos + 4) > road_len && shift == 0){
+    shift = 0;
+    road_pos = 0;
+  }
+
+  // draw road parts
+  uint8_t col = 0;
+  uint8_t page = 0;
+  uint8_t cnt = 0;
+  uint16_t s_buf_pos = 0;
+  uint16_t shift_cnt = shift;
+  for(uint8_t x = 0; x < 5; x++){
+    uint8_t rd = pgm_read_byte_near(roadData + road_pos + x);
+    uint8_t parts_pos = rd * 32;
+ 
+    for(uint8_t i = 0; i < 32; i++){
+      uint8_t rp = pgm_read_byte_near(roadPartsData + parts_pos + i);
+      cnt++;
+
+      // draw material
+      uint16_t material_pos = (rp - 1) * 8;
+      if(x == 0){
+        s_buf_pos = page * WIDTH;
+
+        for(uint8_t j = 0; j < 8; j++){
+          if(shift_cnt != 0){
+            shift_cnt--;
+          }else{
+            if(rp != 0){
+              sBuffer[s_buf_pos + col] = pgm_read_byte_near(roadMaterialData + material_pos + j);
+            }else{
+              sBuffer[s_buf_pos + col] = 0;
+            }
+            col++;
+          }
+        }
+      }else if(x < 4){      
+        s_buf_pos = (page * WIDTH) + (x * 32) - shift;
+
+        for(uint8_t j = 0; j < 8; j++){
+          if(rp != 0){
+              sBuffer[s_buf_pos + col] = pgm_read_byte_near(roadMaterialData + material_pos + j);
+          }else{
+              sBuffer[s_buf_pos + col] = 0;
+          }
+          col++;
+        }
+      }else{
+        if(shift != 0){
+          s_buf_pos = (page * WIDTH) + (x * 32) - shift;
+
+          for(uint8_t j = 0; j < 8; j++){
+            if(shift_cnt != 0){
+              if(rp != 0){
+                sBuffer[s_buf_pos + col] = pgm_read_byte_near(roadMaterialData + material_pos + j);
+                }else{
+                sBuffer[s_buf_pos + col] = 0;
+              }
+              col++;
+              shift_cnt--;
+            }
+          }
+        }          
+      }
+      if(cnt == 4){
+        page++;
+        col = 0;
+        cnt = 0;
+        shift_cnt = shift;
+      }
     }
-    //rp= 0x33;
-    sBuffer[c] = rp;
-    dbyte++;
-    if(dbyte == 8){
-      dbyte = 0;
-      dpos++;
-    }
+    page = 0;
+    col = 0;
+    cnt = 0;    
   }
-  
-  data_start_byte++;
-  if(data_start_byte == 8){
-    data_start_byte = 0;
-    data_pos++;
+  if(shift == 31){
+    road_pos++;
+    shift = 0;
+  }else{
+    shift++;
   }
-
-
-
-
 }
