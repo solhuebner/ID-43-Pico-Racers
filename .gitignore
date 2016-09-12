@@ -1,2 +1,8 @@
-
 .DS_Store
+/PIRC_AB/Debug/
+/PIRC_AB/Release/
+/PIRC_AB/.vs/
+/PIRC_AB/__vm
+/PIRC_AB/*.componentinfo.xml
+/PIRC_AB/*.cppproj
+/PIRC_AB/*.atsln
