@@ -1,6 +1,29 @@
 #ifndef ROAD_H
 #define ROAD_H
 
+PROGMEM const uint8_t collisionMaskY[] = {
+  0b11111111, // y:0
+  0b11111110, // y:1
+  0b11111100, // y:2
+  0b11111000, // y:3
+  0b11110000, // y:4
+  0b11100000, // y:5
+  0b11000000, // y:6
+  0b10000000, // y:7
+};
+
+PROGMEM const uint8_t collisionMaskOver[] = {
+  0b00000000, // over:0
+  0b00000000, // over:0
+  0b00000001, // over:1
+  0b00000011, // over:2
+  0b00000111, // over:3
+  0b00001111, // over:4
+  0b00011111, // over:5
+  0b00111111, // over:6
+  0b01111111, // over:7
+};
+
 PROGMEM const uint8_t roadData[] = {
 // road data length
 0x24,
@@ -12,7 +35,7 @@ PROGMEM const uint8_t roadData[] = {
 0x02, 0x02, 0x02, 0x03,
 0x00, 0x00, 0x00, 0x04,
 0x05, 0x05, 0x05, 0x06,
-0x00, 0x07, 0x07, 0x01,
+0x00, 0x00, 0x00, 0x01,
 0x03, 0x01, 0x03, 0x04,
 0x05, 0x06, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00,

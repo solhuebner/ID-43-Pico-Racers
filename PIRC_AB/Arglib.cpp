@@ -1285,8 +1285,67 @@ bool Arduboy::collide(Rect rect1, Rect rect2)
 ////////////////////////////////////////////////
 // This function is only used in Pico Racers //
 ////////////////////////////////////////////////
-void Arduboy::scrollRoad()
+bool Arduboy::collisionRoad(Rect car_rect, int8_t add_y)
 {
+  uint8_t car_rect_y = car_rect.y + add_y;
+  uint8_t flag = false;
+  uint8_t over = car_rect_y % 8;
+  uint8_t page = (car_rect_y + 1) / 8;
+
+  int8_t h = car_rect.height;
+  uint8_t colY;
+  uint8_t buf;
+  
+  if(page != 3 && page != 4 ){
+    if(over !=0 ){
+      h = h - over;
+    }else{
+      h = h - 8;
+    }
+    do{
+      colY = pgm_read_byte_near(collisionMaskY + over);
+      for(uint8_t x = 0; x < car_rect.width; x++){
+        buf = sBuffer[(page * WIDTH) + car_rect.x + x] & colY;
+        if(buf != 0){
+          flag = true;
+          break;
+        }
+      }
+      page++;
+      if(page == 3 || page == 4 ){
+        h = 0;
+        break;
+      }  
+
+      if(h <= 0){
+        break;
+      }else if((h - 8) < 0){
+        // Less than 8 dot
+        colY = pgm_read_byte_near(collisionMaskOver + h);
+        
+        for(uint8_t x = 0; x < car_rect.width; x++){
+          buf = sBuffer[(page * WIDTH) + car_rect.x + x] & colY;
+
+          if(buf != 0){
+            h = 0;
+            flag = true;
+            break;
+          }
+        }        
+        h = 0;
+      }else{
+        h = h - 8;
+      }
+
+    }while(h > 0);
+  }  
+
+  return flag;
+}
+
+
+void Arduboy::scrollRoad(Rect car_rect)
+{  
   static uint8_t road_pos = 0;
   static uint8_t road_len = 0;
   static uint8_t shift = 0;
@@ -1373,10 +1432,14 @@ void Arduboy::scrollRoad()
     col = 0;
     cnt = 0;    
   }
-  if(shift == 31){
-    road_pos++;
-    shift = 0;
-  }else{
-    shift++;
+
+  // collision test
+  if(!collisionRoad(car_rect, 4) && !collisionRoad(car_rect, -4)){
+    if(shift == 31){
+      road_pos++;
+      shift = 0;
+    }else{
+      shift++;
+    }
   }
 }

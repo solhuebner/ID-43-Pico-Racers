@@ -207,7 +207,8 @@ class Arduboy : public Print
     bool static collide(Rect rect, Rect rect2);
     
     // This function is only used in Pico Racers
-    void scrollRoad();
+    void scrollRoad(Rect car_rect);
+    bool collisionRoad(Rect car_rect, int8_t add_y);
 
   private:
     unsigned char sBuffer[(HEIGHT * WIDTH) / 8];
