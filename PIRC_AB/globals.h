@@ -21,7 +21,7 @@
 #define STATE_GAME_OVER              10
 
 #define GAME_TOP                     0
-#define GAME_BOTTOM                  64
+#define GAME_BOTTOM                  48
 #define GAME_LEFT                    0
 #define GAME_RIGHT                   112
 
@@ -35,8 +35,5 @@ byte menuSelection = STATE_MENU_PLAY; // PLAY menu item is pre-selected
 byte globalCounter = 0;
 byte level = LEVEL_TO_START_WITH;
 unsigned long scorePlayer; 
-
-// collision test
-Rect car_rect;
 
 #endif

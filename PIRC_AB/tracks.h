@@ -10,16 +10,8 @@
 
 void drawTheRoad()
 {
-  
-  // scroll test
-  // collision test
-  car_rect.x = player.x;
-  car_rect.y = player.y;
-  car_rect.width = 16;
-  car_rect.height = 6;
-  arduboy.scrollRoad(car_rect);
+  drawRoad();
 }
-
 
 void roadPart000()
 {

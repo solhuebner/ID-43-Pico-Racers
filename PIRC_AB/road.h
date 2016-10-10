@@ -1,28 +1,10 @@
 #ifndef ROAD_H
 #define ROAD_H
 
-PROGMEM const uint8_t collisionMaskY[] = {
-  0b11111111, // y:0
-  0b11111110, // y:1
-  0b11111100, // y:2
-  0b11111000, // y:3
-  0b11110000, // y:4
-  0b11100000, // y:5
-  0b11000000, // y:6
-  0b10000000, // y:7
-};
-
-PROGMEM const uint8_t collisionMaskOver[] = {
-  0b00000000, // over:0
-  0b00000000, // over:0
-  0b00000001, // over:1
-  0b00000011, // over:2
-  0b00000111, // over:3
-  0b00001111, // over:4
-  0b00011111, // over:5
-  0b00111111, // over:6
-  0b01111111, // over:7
-};
+#define ROAR_PARTS_ROWS       8
+#define ROAD_PARTS_COLUMNS    4
+#define ROAD_PARTS_BLOCKS     5
+#define ROAD_MATERIAL_SIZE    8
 
 PROGMEM const uint8_t roadData[] = {
 // road data length
@@ -179,5 +161,64 @@ PROGMEM const uint8_t roadMaterialData[] = {
 // rock
 0x38, 0x44, 0x82, 0x89, 0x85, 0x81, 0x42, 0x3c,
 };
+
+void drawRoadParts(int16_t x, int16_t y, uint8_t id)
+{
+  uint8_t parts_pos = id * 32;
+  uint8_t road_part;
+  for (uint8_t row = 0; row < ROAR_PARTS_ROWS; row++)
+  {
+    for (uint8_t column = 0; column < ROAD_PARTS_COLUMNS; column++)
+    {
+      road_part = pgm_read_byte_near(roadPartsData + parts_pos + (row * ROAD_PARTS_COLUMNS) + column);
+      if(road_part == 0)
+      {
+        arduboy.fillRect(x + (column * ROAD_MATERIAL_SIZE), y + (row * ROAD_MATERIAL_SIZE), ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, BLACK);
+      }
+      else
+      {
+        arduboy.drawBitmap(x + (column * ROAD_MATERIAL_SIZE), y + (row * ROAD_MATERIAL_SIZE),
+        roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE), ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
+      }      
+    }  
+  
+  }  
+}
+
+void drawRoad()
+{
+  static uint8_t road_pos = 0;
+  static uint8_t road_len = 0;
+  static uint8_t counter = 0;
+  uint8_t road_data;
+  
+  counter++;
+  counter++; // test
+  
+  // init
+  if (road_len == 0)
+  {
+    road_len = pgm_read_byte_near(roadData);
+    road_pos = 1;
+  }
+   
+  for (uint8_t block = 0; block < ROAD_PARTS_BLOCKS; block++)
+  {
+    road_data = pgm_read_byte_near(roadData + road_pos + block);
+    drawRoadParts((block * ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS) - counter, 0, road_data);  
+  }
+
+  if (counter >= ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS)
+  {
+    counter = 0;
+    road_pos++;
+    
+    if (road_pos > (road_len - ROAD_PARTS_BLOCKS))
+    {
+      road_pos = 1;
+    }
+  }
+}
+
 
 #endif
