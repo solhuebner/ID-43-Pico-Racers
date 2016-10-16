@@ -4,12 +4,14 @@
 #include <Arduino.h>
 #include "globals.h"
 #include "road.h"
+#include "cars.h"
 
 #define TOTAL_AMOUNT_OF_LEVELS  2
 #define TOTAL_AMOUNT_OF_ROADPARTS   1
 
 void drawTheRoad()
 {
+  road.add_cnt = player.speed;
   drawRoad();
 }
 

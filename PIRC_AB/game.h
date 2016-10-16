@@ -26,8 +26,8 @@ void stateGameNextLevel()
 
 void stateGamePlaying()
 {
-  drawTheRoad();
   checkInputs();
+  drawTheRoad();
   drawPlayer();
 };
 

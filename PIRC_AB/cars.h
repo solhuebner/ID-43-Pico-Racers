@@ -23,6 +23,8 @@ struct Players
     byte type;
     byte frame;
     byte life;
+    byte speed;
+    byte speed_cnt;
 
     void set()
     {
@@ -31,6 +33,8 @@ struct Players
       type = 0;
       frame = 0;
       life = 3;
+      speed = 0;
+      speed_cnt = 0;
     }
 };
 

@@ -20,7 +20,32 @@ void checkInputs()
     player.y++;
   }
 
-  if (arduboy.justPressed(A_BUTTON)) gameState = STATE_GAME_PAUSE;
+  if (arduboy.pressed(A_BUTTON))
+  {
+    if (player.speed < 6 && player.speed_cnt == 0)
+    {
+      player.speed++;
+      player.speed_cnt = 20;
+    }
+    if (player.speed_cnt > 0)
+    {
+      player.speed_cnt--;      
+    }
+  }
+  
+  if (arduboy.notPressed(A_BUTTON))
+  {
+    if (player.speed > 0 && player.speed_cnt == 0)
+    {
+      player.speed--;
+      player.speed_cnt = 10;
+    }  
+    if (player.speed_cnt > 0)
+    {
+      player.speed_cnt--;
+    }
+  }
+  
   if (arduboy.justPressed(B_BUTTON))
   {
     player.type++;

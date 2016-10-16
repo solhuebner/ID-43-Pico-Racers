@@ -162,6 +162,25 @@ PROGMEM const uint8_t roadMaterialData[] = {
 0x38, 0x44, 0x82, 0x89, 0x85, 0x81, 0x42, 0x3c,
 };
 
+struct Road
+{
+  public:
+  uint8_t pos;
+  uint8_t len;
+  int16_t cnt;
+  uint8_t add_cnt;
+
+  void set()
+  {
+    pos = 0;
+    len = 0;
+    cnt = 0;
+    add_cnt = 0;
+  }
+};
+
+Road road;
+
 void drawRoadParts(int16_t x, int16_t y, uint8_t id)
 {
   uint8_t parts_pos = id * 32;
@@ -187,38 +206,34 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
 
 void drawRoad()
 {
-  static uint8_t road_pos = 0;
-  static uint8_t road_len = 0;
-  static uint8_t counter = 0;
   uint8_t road_data;
   
-  counter++;
-  counter++; // test
+  road.cnt = road.cnt + road.add_cnt;
   
   // init
-  if (road_len == 0)
+  if (road.len == 0)
   {
-    road_len = pgm_read_byte_near(roadData);
-    road_pos = 1;
+    road.len = pgm_read_byte_near(roadData);
+    road.pos = 1;
   }
    
   for (uint8_t block = 0; block < ROAD_PARTS_BLOCKS; block++)
   {
-    road_data = pgm_read_byte_near(roadData + road_pos + block);
-    drawRoadParts((block * ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS) - counter, 0, road_data);  
+    road_data = pgm_read_byte_near(roadData + road.pos + block);
+    drawRoadParts((block * ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS) - road.cnt, 0, road_data);  
   }
 
-  if (counter >= ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS)
+  if (road.cnt >= ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS)
   {
-    counter = 0;
-    road_pos++;
+    road.cnt = 0;
+    road.pos++;
     
-    if (road_pos > (road_len - ROAD_PARTS_BLOCKS))
+    // loop (test only)
+    if (road.pos > (road.len - ROAD_PARTS_BLOCKS))
     {
-      road_pos = 1;
+      road.pos = 1;
     }
   }
 }
-
 
 #endif
