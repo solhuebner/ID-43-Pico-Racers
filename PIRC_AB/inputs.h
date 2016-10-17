@@ -8,16 +8,18 @@
 void checkInputs()
 {
   player.frame = carTypes[player.type] + 1;
-
-  if (arduboy.pressed(UP_BUTTON) && (player.y > GAME_TOP))
+  if (player.speed > 0)
   {
-    player.frame = carTypes[player.type];
-    player.y--;
-  }
-  if (arduboy.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
-  {
-    player.frame = carTypes[player.type] + 2;
-    player.y++;
+    if (arduboy.pressed(UP_BUTTON) && (player.y > GAME_TOP))
+    {
+      player.frame = carTypes[player.type];
+      player.y--;
+    }
+    if (arduboy.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
+    {
+      player.frame = carTypes[player.type] + 2;
+      player.y++;
+    }
   }
 
   if (arduboy.pressed(A_BUTTON))
@@ -29,23 +31,23 @@ void checkInputs()
     }
     if (player.speed_cnt > 0)
     {
-      player.speed_cnt--;      
+      player.speed_cnt--;
     }
   }
-  
+
   if (arduboy.notPressed(A_BUTTON))
   {
     if (player.speed > 0 && player.speed_cnt == 0)
     {
       player.speed--;
       player.speed_cnt = 10;
-    }  
+    }
     if (player.speed_cnt > 0)
     {
       player.speed_cnt--;
     }
   }
-  
+
   if (arduboy.justPressed(B_BUTTON))
   {
     player.type++;

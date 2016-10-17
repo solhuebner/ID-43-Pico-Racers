@@ -21,7 +21,7 @@
 #define STATE_GAME_OVER              10
 
 #define GAME_TOP                     0
-#define GAME_BOTTOM                  48
+#define GAME_BOTTOM                  56
 #define GAME_LEFT                    0
 #define GAME_RIGHT                   112
 
