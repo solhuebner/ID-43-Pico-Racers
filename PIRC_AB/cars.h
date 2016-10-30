@@ -25,6 +25,9 @@ struct Players
     byte life;
     byte speed;
     byte speed_cnt;
+    byte coll_t;
+    byte coll_b;
+    byte coll_f;
 
     void set()
     {
@@ -35,6 +38,9 @@ struct Players
       life = 3;
       speed = 0;
       speed_cnt = 0;
+      coll_t = 0;
+      coll_b = 0;
+      coll_f = 0;
     }
 };
 
