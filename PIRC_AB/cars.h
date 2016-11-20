@@ -11,6 +11,9 @@
 #define CAR_TYPE_FIVE                12
 #define CAR_TYPE_SIX                 15
 
+#define CAR_WIDTH                    16
+#define CAR_HEIGHT                   8
+
 byte carTypes[] = {CAR_TYPE_ONE, CAR_TYPE_TWO, CAR_TYPE_THREE, CAR_TYPE_FOUR, CAR_TYPE_FIVE, CAR_TYPE_SIX};
 
 byte playerFrame = 0;
@@ -25,9 +28,10 @@ struct Players
     byte life;
     byte speed;
     byte speed_cnt;
-    byte coll_t;
-    byte coll_b;
-    byte coll_f;
+    byte coll_top;
+    byte coll_bottom;
+    byte coll_front;
+    Rect rect;
 
     void set()
     {
@@ -38,9 +42,13 @@ struct Players
       life = 3;
       speed = 0;
       speed_cnt = 0;
-      coll_t = 0;
-      coll_b = 0;
-      coll_f = 0;
+      coll_top = 0;
+      coll_bottom = 0;
+      coll_front = 0;
+      rect.x = x;
+      rect.y = y;
+      rect.width = CAR_WIDTH - 10;
+      rect.height = CAR_HEIGHT;
     }
 };
 

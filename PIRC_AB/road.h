@@ -179,6 +179,8 @@ struct Road
   uint8_t len;
   int16_t cnt;
   uint8_t add_cnt;
+  Rect rect[64];
+  int16_t rect_cnt;
 
   void set()
   {
@@ -186,6 +188,7 @@ struct Road
     len = 0;
     cnt = 0;
     add_cnt = 0;
+    rect_cnt = 0;
   }
 };
 
@@ -194,54 +197,45 @@ Road road;
 void drawRoadParts(int16_t x, int16_t y, uint8_t id)
 {
   uint8_t parts_pos = id * 32;
-  uint8_t road_part;
 
   for (uint8_t row = 0; row < ROAR_PARTS_ROWS; row++)
   {
     for (uint8_t column = 0; column < ROAD_PARTS_COLUMNS; column++)
     {
-      road_part = pgm_read_byte_near(roadPartsData + parts_pos + (row * ROAD_PARTS_COLUMNS) + column);
+      uint8_t road_part = pgm_read_byte_near(roadPartsData + parts_pos + (row * ROAD_PARTS_COLUMNS) + column);
+      int16_t xx = x + (column * ROAD_MATERIAL_SIZE);
+      int16_t yy = y + (row * ROAD_MATERIAL_SIZE);
       if(road_part == 0)
       {
-        arduboy.fillRect(x + (column * ROAD_MATERIAL_SIZE), y + (row * ROAD_MATERIAL_SIZE), ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, BLACK);
+        arduboy.fillRect(xx, yy, ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, BLACK);
       }
       else
       {
-        arduboy.drawBitmap(x + (column * ROAD_MATERIAL_SIZE), y + (row * ROAD_MATERIAL_SIZE),
-        roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE), ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
-        
+        arduboy.drawBitmap(xx, yy, roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE), ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
+
         // collision test
-        //uint8_t xx = (column * 8) + x;
-        //uint8_t px1 = player.x + 4;
-        //uint8_t px2 = player.x + 12;
-        //if (((px1 >= xx && px1 <= xx) || (px2 >= xx && px2 <= xx))
-        if (pgm_read_byte_near(roadMaterialCollisionData + (road_part - 1)) != 0) {
-          uint8_t y1 = row * 8;
-          uint8_t y2 = y1 + 8;
-          uint8_t py1 = player.y;
-          uint8_t py2 = player.y + 8;
-          
-          if (py1 > y1 && py1 < y2) {
-            player.coll_t = 1;
-          }
-          if (py2 > y1 && py2 < y2) {
-            player.coll_b = 1;
-          }    
+        if ((xx <= (player.x + CAR_WIDTH)) &&
+        (pgm_read_byte_near(roadMaterialCollisionData + (road_part - 1)) != 0))
+        {
+          road.rect[ road.rect_cnt ].x = xx;
+          road.rect[ road.rect_cnt ].y = yy;
+          road.rect[ road.rect_cnt ].height = 8;
+          road.rect[ road.rect_cnt ].width = 8;
+          road.rect_cnt++;          
         }
-      }      
+      }
     }  
   }  
 }
 
 void drawRoad()
 {
-  uint8_t road_data;
-  player.coll_t = 0;
-  player.coll_b = 0;
-  player.coll_f = 0;
-  
   road.cnt = road.cnt + road.add_cnt;
-  
+  player.coll_top = 0;
+  player.coll_bottom = 0;
+  player.coll_front = 0;
+  road.rect_cnt = 0;
+
   // init
   if (road.len == 0)
   {
@@ -251,8 +245,8 @@ void drawRoad()
    
   for (uint8_t block = 0; block < ROAD_PARTS_BLOCKS; block++)
   {
-    road_data = pgm_read_byte_near(roadData + road.pos + block);
-    drawRoadParts((block * ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS) - road.cnt, 0, road_data);  
+    drawRoadParts((block * ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS) - road.cnt, 0,
+    pgm_read_byte_near(roadData + road.pos + block));
   }
 
   if (road.cnt >= ROAR_PARTS_ROWS * ROAD_PARTS_COLUMNS)
@@ -266,6 +260,23 @@ void drawRoad()
       road.pos = 1;
     }
   }
+
+  // collision test
+  for (uint8_t i = 0; i < road.rect_cnt; i++)
+  {
+    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y - 1, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+    {
+      player.coll_top = 1;
+    }
+    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y + 1, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+    {
+      player.coll_bottom = 1;
+    }
+    if (arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+    {
+      player.coll_front = 1;
+    }
+  }  
 }
 
 #endif
