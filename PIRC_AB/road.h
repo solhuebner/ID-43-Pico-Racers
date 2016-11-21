@@ -164,12 +164,13 @@ PROGMEM const uint8_t roadMaterialData[] = {
 0x38, 0x44, 0x82, 0x89, 0x85, 0x81, 0x42, 0x3c,
 };
 
-PROGMEM const uint8_t roadMaterialCollisionData[] = {
-0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 
-0xff, 0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 
-0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+PROGMEM const uint16_t roadMaterialCollisionData[] = {
+//xywh
+0x0088, 0x0088, 0x0088, 0x0083, 0x0083, 0x0088, 0x0088, 0x0484,
+0x0484, 0x0000, 0x0000, 0x0000, 0x0000, 0x0084, 0x0085, 0x0086,
+0x0087, 0x0088, 0x0088, 0x0088, 0x0088, 0x0081, 0x0082, 0x0083,
+0x0484, 0x0385, 0x0286, 0x0187, 0x0088, 0x0088, 0x0088, 0x0088,
+0x0781, 0x0682, 0x0583, 0x0088, 0x0088, 0x0088, 0x0088, 0x0088,
 };
 
 struct Road
@@ -214,13 +215,23 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
         arduboy.drawBitmap(xx, yy, roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE), ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
 
         // collision test
-        if ((xx <= (player.x + CAR_WIDTH)) &&
-        (pgm_read_byte_near(roadMaterialCollisionData + (road_part - 1)) != 0))
+        if (xx >= 8 && (xx <= (player.x + CAR_WIDTH)) &&
+        (pgm_read_word_near(roadMaterialCollisionData + (road_part - 1)) != 0))
         {
-          road.rect[ road.rect_cnt ].x = xx;
-          road.rect[ road.rect_cnt ].y = yy;
-          road.rect[ road.rect_cnt ].height = 8;
-          road.rect[ road.rect_cnt ].width = 8;
+          uint16_t c = pgm_read_word_near(roadMaterialCollisionData + (road_part - 1));
+          
+          uint8_t xy = highByte(c);
+          uint8_t rx = xy >> 4;
+          uint8_t ry = xy & 0b00001111;
+          uint8_t wh = lowByte(c);
+          uint8_t rw = wh >> 4;
+          uint8_t rh = wh & 0b00001111;
+
+          road.rect[ road.rect_cnt ].x = xx + rx;
+          road.rect[ road.rect_cnt ].y = yy + ry;
+          road.rect[ road.rect_cnt ].width = rw;
+          road.rect[ road.rect_cnt ].height = rh;
+
           road.rect_cnt++;          
         }
       }
@@ -231,9 +242,9 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
 void drawRoad()
 {
   road.cnt = road.cnt + road.add_cnt;
-  player.coll_top = 0;
-  player.coll_bottom = 0;
-  player.coll_front = 0;
+  player.isMoveTop = true;
+  player.isMoveBottom = true;
+  player.isMoveRight = true;
   road.rect_cnt = 0;
 
   // init
@@ -266,15 +277,15 @@ void drawRoad()
   {
     if (arduboy.collide({.x = player.rect.x, .y = player.rect.y - 1, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.coll_top = 1;
+      player.isMoveTop = false;
     }
     if (arduboy.collide({.x = player.rect.x, .y = player.rect.y + 1, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.coll_bottom = 1;
+      player.isMoveBottom = false;
     }
     if (arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.coll_front = 1;
+      player.isMoveRight = false;
     }
   }  
 }

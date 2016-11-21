@@ -15,14 +15,14 @@ void checkInputs()
 //  {    
     if (arduboy.pressed(UP_BUTTON) && (player.y > GAME_TOP))
     {
-      if (player.coll_top == 0) {
+      if (player.isMoveTop) {
         player.frame = carTypes[player.type];
         player.y--;
       }
     }
     if (arduboy.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
     {
-      if (player.coll_bottom == 0) {
+      if (player.isMoveBottom) {
         player.frame = carTypes[player.type] + 2;
         player.y++;
       }      
@@ -32,7 +32,7 @@ void checkInputs()
 
   if (arduboy.pressed(A_BUTTON))
   {
-    if (player.speed < 6 && player.speed_cnt == 0 && player.coll_front == 0)
+    if (player.speed < 6 && player.speed_cnt == 0 && player.isMoveRight)
     {
       //player.speed = 1;
       player.speed++;
@@ -57,7 +57,7 @@ void checkInputs()
     }
   }
 
-  if (player.coll_front == 1)
+  if (!player.isMoveRight)
   {
     player.speed = 0;
     player.speed_cnt = 0;

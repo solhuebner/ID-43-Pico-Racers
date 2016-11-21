@@ -28,9 +28,9 @@ struct Players
     byte life;
     byte speed;
     byte speed_cnt;
-    byte coll_top;
-    byte coll_bottom;
-    byte coll_front;
+    boolean isMoveTop;
+    boolean isMoveBottom;
+    boolean isMoveRight;
     Rect rect;
 
     void set()
@@ -42,9 +42,9 @@ struct Players
       life = 3;
       speed = 0;
       speed_cnt = 0;
-      coll_top = 0;
-      coll_bottom = 0;
-      coll_front = 0;
+      isMoveTop = true;
+      isMoveBottom = true;
+      isMoveRight = true;
       rect.x = x;
       rect.y = y;
       rect.width = CAR_WIDTH - 10;
