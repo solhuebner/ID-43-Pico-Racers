@@ -212,25 +212,23 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
       }
       else
       {
-        arduboy.drawBitmap(xx, yy, roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE), ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
+        arduboy.drawBitmap(xx, yy, roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE)
+        , ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
 
-        // collision test
         if (xx >= 8 && (xx <= (player.x + CAR_WIDTH)) &&
         (pgm_read_word_near(roadMaterialCollisionData + (road_part - 1)) != 0))
         {
           uint16_t c = pgm_read_word_near(roadMaterialCollisionData + (road_part - 1));
           
           uint8_t xy = highByte(c);
-          uint8_t rx = xy >> 4;
-          uint8_t ry = xy & 0b00001111;
           uint8_t wh = lowByte(c);
-          uint8_t rw = wh >> 4;
-          uint8_t rh = wh & 0b00001111;
 
-          road.rect[ road.rect_cnt ].x = xx + rx;
-          road.rect[ road.rect_cnt ].y = yy + ry;
-          road.rect[ road.rect_cnt ].width = rw;
-          road.rect[ road.rect_cnt ].height = rh;
+          road.rect[ road.rect_cnt ] = {
+            .x = xx + (xy >> 4), 
+            .y = yy + (xy & 0b00001111),
+            .width = (wh >> 4),
+            .height = (wh & 0b00001111)
+          };          
 
           road.rect_cnt++;          
         }
@@ -242,12 +240,13 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
 void drawRoad()
 {
   road.cnt = road.cnt + road.add_cnt;
-  player.isMoveTop = true;
-  player.isMoveBottom = true;
-  player.isMoveRight = true;
+  player.isMoveUp = true;
+  player.isMoveDown = true;
+  player.isMoveFront = true;
+  player.isMoveFrontUp = false;
+  player.isMoveFrontDown = false;
   road.rect_cnt = 0;
 
-  // init
   if (road.len == 0)
   {
     road.len = pgm_read_byte_near(roadData);
@@ -272,20 +271,36 @@ void drawRoad()
     }
   }
 
-  // collision test
   for (uint8_t i = 0; i < road.rect_cnt; i++)
   {
-    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y - 1, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y - 1, 
+    .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.isMoveTop = false;
+      player.isMoveUp = false;
     }
-    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y + 1, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y + 1, 
+    .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.isMoveBottom = false;
+      player.isMoveDown = false;
     }
-    if (arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y, .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+    if (arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y,
+    .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.isMoveRight = false;
+      player.isMoveFront = false;
+
+      if (!arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y - 1,
+      .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+      {
+        player.isMoveFrontUp = true;
+        player.isMoveFront = true;
+      }
+      else
+      if (!arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y + 1,
+      .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+      {
+        player.isMoveFrontDown = true;
+        player.isMoveFront = true;
+      }
     }
   }  
 }

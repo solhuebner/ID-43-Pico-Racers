@@ -6,35 +6,42 @@
 #include "cars.h"
 #include "road.h"
 
+void upCar()
+{
+  player.frame = carTypes[player.type];
+  player.y--;
+}
+
+void downCar()
+{
+  player.frame = carTypes[player.type] + 2;
+  player.y++;
+}
+
 void checkInputs()
 {
   player.frame = carTypes[player.type] + 1;
-
   
-//  if (player.speed > 0)
-//  {    
+  if (player.speed > 0)
+  {    
     if (arduboy.pressed(UP_BUTTON) && (player.y > GAME_TOP))
     {
-      if (player.isMoveTop) {
-        player.frame = carTypes[player.type];
-        player.y--;
+      if (player.isMoveUp) {
+        upCar();
       }
     }
     if (arduboy.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
     {
-      if (player.isMoveBottom) {
-        player.frame = carTypes[player.type] + 2;
-        player.y++;
+      if (player.isMoveDown) {
+        downCar();
       }      
     }
-    player.rect.y = player.y;
-//  }
+  }
 
   if (arduboy.pressed(A_BUTTON))
   {
-    if (player.speed < 6 && player.speed_cnt == 0 && player.isMoveRight)
+    if (player.speed < 6 && player.speed_cnt == 0 && player.isMoveFront)
     {
-      //player.speed = 1;
       player.speed++;
       player.speed_cnt = 20;
     }
@@ -56,8 +63,17 @@ void checkInputs()
       player.speed_cnt--;
     }
   }
-
-  if (!player.isMoveRight)
+  
+  if (player.isMoveFrontUp)
+  {
+    upCar();
+  }
+  if (player.isMoveFrontDown)
+  {
+    downCar();
+  }
+  
+  if (!player.isMoveFront)
   {
     player.speed = 0;
     player.speed_cnt = 0;
@@ -68,7 +84,8 @@ void checkInputs()
     player.type++;
     if (player.type > 5) player.type = 0;
   }
-}
 
+  player.rect.y = player.y;
+}
 
 #endif
