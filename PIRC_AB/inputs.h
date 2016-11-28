@@ -67,10 +67,14 @@ void checkInputs()
   if (player.isMoveFrontUp)
   {
     upCar();
+    player.speed = 1;
+    player.speed_cnt = 5;
   }
   if (player.isMoveFrontDown)
   {
     downCar();
+    player.speed = 1;
+    player.speed_cnt = 5;
   }
   
   if (!player.isMoveFront)
