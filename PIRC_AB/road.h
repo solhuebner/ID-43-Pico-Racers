@@ -165,12 +165,25 @@ PROGMEM const uint8_t roadMaterialData[] = {
 };
 
 PROGMEM const uint16_t roadMaterialCollisionData[] = {
-//xywh
-0x0088, 0x0088, 0x0088, 0x0083, 0x0083, 0x0088, 0x0088, 0x0484,
-0x0484, 0x0000, 0x0000, 0x0000, 0x0000, 0x0084, 0x0085, 0x0086,
-0x0087, 0x0088, 0x0088, 0x0088, 0x0088, 0x0081, 0x0082, 0x0083,
-0x0484, 0x0385, 0x0286, 0x0187, 0x0088, 0x0088, 0x0088, 0x0088,
-0x0781, 0x0682, 0x0583, 0x0088, 0x0088, 0x0088, 0x0088, 0x0088,
+// 0x0000
+//   |||+ height 1-8
+//   ||+- width 1-8  
+//   |+-- y 0-7
+//   +--- x 0-7 + 0b1000 (Slow down flag) 
+        0x0088, 0x0088, 0x0088, 0x0083, 0x0083, 0x0088, 0x0088, 
+0x0484, 0x0484, 0x0000, 0x0000, 0x0000, 0x0000, 0x8084, 0x8184, 
+0x8284, 0x8384, 0x8484, 0x8583, 0x8682, 0x8781, 0x8081, 0x8082, 
+0x8083, 0x8484, 0x8384, 0x8284, 0x8184, 0x8084, 0x8083, 0x8082,
+0x8081, 0x8781, 0x8682, 0x8583, 0x0088, 0x0088, 0x0088, 0x0088, 
+};
+
+struct RoadRect
+{
+  int x;
+  int y;
+  uint8_t width;
+  uint8_t height;
+  boolean isSlowDown;
 };
 
 struct Road
@@ -180,7 +193,7 @@ struct Road
   uint8_t len;
   int16_t cnt;
   uint8_t add_cnt;
-  Rect rect[64];
+  RoadRect rect[64];
   int16_t rect_cnt;
 
   void set()
@@ -224,10 +237,11 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
           uint8_t wh = lowByte(c);
 
           road.rect[ road.rect_cnt ] = {
-            .x = xx + (xy >> 4), 
+            .x = xx + ((xy >> 4) & 0b00000111), 
             .y = yy + (xy & 0b00001111),
             .width = (wh >> 4),
-            .height = (wh & 0b00001111)
+            .height = (wh & 0b00001111),
+            .isSlowDown = bitRead(xy, 7)
           };          
 
           road.rect_cnt++;          
@@ -235,6 +249,14 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
       }
     }  
   }  
+}
+
+bool roadCollide(Rect rect1, RoadRect rect2)
+{
+  return !( rect2.x                 >=  rect1.x + rect1.width    ||
+            rect2.x + rect2.width   <=  rect1.x                ||
+            rect2.y                 >=  rect1.y + rect1.height ||
+            rect2.y + rect2.height  <=  rect1.y);
 }
 
 void drawRoad()
@@ -245,6 +267,7 @@ void drawRoad()
   player.isMoveFront = true;
   player.isMoveFrontUp = false;
   player.isMoveFrontDown = false;
+  player.isSlowDown = false;
   road.rect_cnt = 0;
 
   if (road.len == 0)
@@ -273,33 +296,45 @@ void drawRoad()
 
   for (uint8_t i = 0; i < road.rect_cnt; i++)
   {
-    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y - 1, 
+    if (roadCollide({.x = player.rect.x, .y = player.rect.y - 1, 
     .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
       player.isMoveUp = false;
+      
+      if (road.rect[i].isSlowDown)
+      {
+        player.isSlowDown = true;
+      }
     }
-    if (arduboy.collide({.x = player.rect.x, .y = player.rect.y + 1, 
+    if (roadCollide({.x = player.rect.x, .y = player.rect.y + 1, 
     .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
       player.isMoveDown = false;
+
+      if (road.rect[i].isSlowDown)
+      {
+        player.isSlowDown = true;
+      }
     }
-    if (arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y,
+    if (roadCollide({.x = player.rect.x + 4, .y = player.rect.y,
     .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.isMoveFront = false;
 
-      if (!arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y - 1,
+      if (!roadCollide({.x = player.rect.x + 4, .y = player.rect.y - 1,
       .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
       {
         player.isMoveFrontUp = true;
-        player.isMoveFront = true;
       }
       else
-      if (!arduboy.collide({.x = player.rect.x + 4, .y = player.rect.y + 1,
+      if (!roadCollide({.x = player.rect.x + 4, .y = player.rect.y + 1,
       .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
       {
         player.isMoveFrontDown = true;
-        player.isMoveFront = true;
+      }
+      
+      if (road.rect[i].isSlowDown)
+      {
+        player.isSlowDown = true;
       }
     }
   }  
