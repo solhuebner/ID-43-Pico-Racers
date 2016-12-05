@@ -168,10 +168,10 @@ PROGMEM const uint16_t roadMaterialCollisionData[] = {
 // 0x0000
 //   |||+ height 1-8
 //   ||+- width 1-8  
-//   |+-- y 0-7
-//   +--- x 0-7 + 0b1000 (Slow down flag) 
-        0x0088, 0x0088, 0x0088, 0x0083, 0x0083, 0x0088, 0x0088, 
-0x0484, 0x0484, 0x0000, 0x0000, 0x0000, 0x0000, 0x8084, 0x8184, 
+//   |+-- y 0-7 + 0b1000 (slowest flag) 
+//   +--- x 0-7 + 0b1000 (Slow flag) 
+        0x0888, 0x0888, 0x0888, 0x0883, 0x0883, 0x0888, 0x0888, 
+0x0c84, 0x0c84, 0x0000, 0x0000, 0x0000, 0x0000, 0x8084, 0x8184, 
 0x8284, 0x8384, 0x8484, 0x8583, 0x8682, 0x8781, 0x8081, 0x8082, 
 0x8083, 0x8484, 0x8384, 0x8284, 0x8184, 0x8084, 0x8083, 0x8082,
 0x8081, 0x8781, 0x8682, 0x8583, 0x0088, 0x0088, 0x0088, 0x0088, 
@@ -183,7 +183,8 @@ struct RoadRect
   int y;
   uint8_t width;
   uint8_t height;
-  boolean isSlowDown;
+  boolean isSlow;
+  boolean isSlowest;
 };
 
 struct Road
@@ -238,10 +239,11 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
 
           road.rect[ road.rect_cnt ] = {
             .x = xx + ((xy >> 4) & 0b00000111), 
-            .y = yy + (xy & 0b00001111),
+            .y = yy + (xy & 0b00000111),
             .width = (wh >> 4),
             .height = (wh & 0b00001111),
-            .isSlowDown = bitRead(xy, 7)
+            .isSlow = bitRead(xy, 7),
+            .isSlowest = bitRead(xy, 3)
           };          
 
           road.rect_cnt++;          
@@ -267,7 +269,8 @@ void drawRoad()
   player.isMoveFront = true;
   player.isMoveFrontUp = false;
   player.isMoveFrontDown = false;
-  player.isSlowDown = false;
+  player.isSlow = false;
+  player.isSlowest = false;
   road.rect_cnt = 0;
 
   if (road.len == 0)
@@ -296,45 +299,17 @@ void drawRoad()
 
   for (uint8_t i = 0; i < road.rect_cnt; i++)
   {
-    if (roadCollide({.x = player.rect.x, .y = player.rect.y - 1, 
+    if (roadCollide({.x = player.rect.x, .y = player.rect.y,
     .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
     {
-      player.isMoveUp = false;
-      
-      if (road.rect[i].isSlowDown)
+      if (road.rect[i].isSlowest)
       {
-        player.isSlowDown = true;
-      }
-    }
-    if (roadCollide({.x = player.rect.x, .y = player.rect.y + 1, 
-    .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
-    {
-      player.isMoveDown = false;
-
-      if (road.rect[i].isSlowDown)
-      {
-        player.isSlowDown = true;
-      }
-    }
-    if (roadCollide({.x = player.rect.x + 4, .y = player.rect.y,
-    .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
-    {
-
-      if (!roadCollide({.x = player.rect.x + 4, .y = player.rect.y - 1,
-      .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
-      {
-        player.isMoveFrontUp = true;
+        player.isSlowest = true;
       }
       else
-      if (!roadCollide({.x = player.rect.x + 4, .y = player.rect.y + 1,
-      .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+      if (road.rect[i].isSlow && !player.isSlowest)
       {
-        player.isMoveFrontDown = true;
-      }
-      
-      if (road.rect[i].isSlowDown)
-      {
-        player.isSlowDown = true;
+        player.isSlow = true;
       }
     }
   }  

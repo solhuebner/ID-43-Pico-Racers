@@ -33,7 +33,8 @@ struct Players
     boolean isMoveFront;
     boolean isMoveFrontUp;
     boolean isMoveFrontDown;
-    boolean isSlowDown;
+    boolean isSlow;
+    boolean isSlowest;
     Rect rect;
 
     void set()
@@ -50,7 +51,8 @@ struct Players
       isMoveFront = true;
       isMoveFrontUp = false;
       isMoveFrontDown = false;
-      isSlowDown = false;
+      isSlow = false;
+      isSlowest = false;
       rect.x = x;
       rect.y = y;
       rect.width = CAR_WIDTH - 10;

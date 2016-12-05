@@ -63,21 +63,18 @@ void checkInputs()
       player.speed_cnt--;
     }
   }
-  
-  if (player.isMoveFrontUp)
-  {
-    upCar(2);
-  }
-  if (player.isMoveFrontDown)
-  {
-    downCar(2);
-  }
-  
-  if (player.isSlowDown)
+
+  if (player.isSlowest)
   {
     player.speed = 1;
     player.speed_cnt = 5;
   }  
+  else
+  if (player.isSlow)
+  {
+    player.speed = 2;
+    player.speed_cnt = 5;
+  }
   
   if (arduboy.justPressed(B_BUTTON))
   {
