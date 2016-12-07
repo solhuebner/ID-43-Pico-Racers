@@ -30,9 +30,6 @@ struct Players
     byte speed_cnt;
     boolean isMoveUp;
     boolean isMoveDown;
-    boolean isMoveFront;
-    boolean isMoveFrontUp;
-    boolean isMoveFrontDown;
     boolean isSlow;
     boolean isSlowest;
     Rect rect;
@@ -48,9 +45,6 @@ struct Players
       speed_cnt = 0;
       isMoveUp = true;
       isMoveDown = true;
-      isMoveFront = true;
-      isMoveFrontUp = false;
-      isMoveFrontDown = false;
       isSlow = false;
       isSlowest = false;
       rect.x = x;

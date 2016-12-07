@@ -40,10 +40,26 @@ void checkInputs()
 
   if (arduboy.pressed(A_BUTTON))
   {
-    if (player.speed < 6 && player.speed_cnt == 0 && player.isMoveFront)
+    if (player.speed < 6 && player.speed_cnt == 0)
     {
-      player.speed++;
       player.speed_cnt = 20;
+      
+      if (!player.isSlow && !player.isSlowest) 
+      {
+        player.speed++;
+      }
+      else
+      {
+        if (player.isSlowest) 
+        {
+          player.speed = 1;
+        } 
+        else
+        if (player.isSlow) 
+        {
+          player.speed = 2;
+        } 
+      }
     }
     if (player.speed_cnt > 0)
     {
@@ -66,14 +82,28 @@ void checkInputs()
 
   if (player.isSlowest)
   {
-    player.speed = 1;
-    player.speed_cnt = 5;
+    if (player.speed > 1 && player.speed_cnt == 0)
+    {
+      player.speed--;
+      player.speed_cnt = 40;
+    }
+    if (player.speed_cnt > 0)
+    {
+      player.speed_cnt--;
+    }
   }  
   else
   if (player.isSlow)
   {
-    player.speed = 2;
-    player.speed_cnt = 5;
+    if (player.speed > 2 && player.speed_cnt == 0)
+    {
+      player.speed--;
+      player.speed_cnt = 40;
+    }
+    if (player.speed_cnt > 0)
+    {
+      player.speed_cnt--;
+    }
   }
   
   if (arduboy.justPressed(B_BUTTON))

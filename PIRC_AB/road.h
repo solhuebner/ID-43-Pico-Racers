@@ -194,7 +194,7 @@ struct Road
   uint8_t len;
   int16_t cnt;
   uint8_t add_cnt;
-  RoadRect rect[64];
+  RoadRect rect[32];
   int16_t rect_cnt;
 
   void set()
@@ -266,9 +266,6 @@ void drawRoad()
   road.cnt = road.cnt + road.add_cnt;
   player.isMoveUp = true;
   player.isMoveDown = true;
-  player.isMoveFront = true;
-  player.isMoveFrontUp = false;
-  player.isMoveFrontDown = false;
   player.isSlow = false;
   player.isSlowest = false;
   road.rect_cnt = 0;
