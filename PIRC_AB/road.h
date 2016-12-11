@@ -268,6 +268,7 @@ void drawRoad()
   player.isMoveDown = true;
   player.isSlow = false;
   player.isSlowest = false;
+  player.isClash = false;
   road.rect_cnt = 0;
 
   if (road.len == 0)
@@ -286,7 +287,7 @@ void drawRoad()
   {
     road.cnt = 0;
     road.pos++;
-    
+
     // loop (test only)
     if (road.pos > (road.len - ROAD_PARTS_BLOCKS))
     {
@@ -296,8 +297,7 @@ void drawRoad()
 
   for (uint8_t i = 0; i < road.rect_cnt; i++)
   {
-    if (roadCollide({.x = player.rect.x, .y = player.rect.y,
-    .width = player.rect.width, .height = player.rect.height }, road.rect[i]))
+    if (roadCollide(player.rect, road.rect[i]))
     {
       if (road.rect[i].isSlowest)
       {
@@ -310,6 +310,28 @@ void drawRoad()
       }
     }
   }  
+
+  //test
+  if (arduboy.collide(player.rect, enemy.rect))
+  {
+    player.isClash = true;
+  }
+
+  if (player.speed < 2)
+  {
+    if (enemy.x < 128)
+    {
+      enemy.x += 2;
+    }
+  }
+  else
+  {
+    enemy.x--;
+  }
+  if (enemy.x < -16) {
+    enemy.x = 128;
+  }
+  enemy.rect.x = enemy.x;
 }
 
 #endif

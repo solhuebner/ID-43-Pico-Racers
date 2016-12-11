@@ -32,6 +32,7 @@ struct Players
     boolean isMoveDown;
     boolean isSlow;
     boolean isSlowest;
+    boolean isClash;
     Rect rect;
 
     void set()
@@ -47,9 +48,10 @@ struct Players
       isMoveDown = true;
       isSlow = false;
       isSlowest = false;
+      isClash = false;
       rect.x = x;
       rect.y = y;
-      rect.width = CAR_WIDTH - 10;
+      rect.width = CAR_WIDTH;
       rect.height = CAR_HEIGHT;
     }
 };
@@ -59,6 +61,32 @@ Players player;
 void drawPlayer()
 {
   sprites.drawPlusMask(player.x, player.y, cars_plus_mask, player.frame);
+}
+
+struct Enemys
+{
+  public:
+    int x;
+    int y;
+    Rect rect;
+
+    void set()
+    {
+      x = 128;
+      y = 28;
+      rect.x = x;
+      rect.y = y;
+      rect.width = CAR_WIDTH;
+      rect.height = CAR_HEIGHT;
+    }
+};
+
+Enemys enemy;
+
+void drawEnemy()
+{
+  //test
+  sprites.drawPlusMask(enemy.x, enemy.y, cars_plus_mask, 1);
 }
 
 #endif

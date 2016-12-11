@@ -21,6 +21,7 @@ void stateGameNextLevel()
 {
   gameState = STATE_GAME_PLAYING;
   player.set();
+  enemy.set();
 };
 
 
@@ -29,6 +30,7 @@ void stateGamePlaying()
   drawTheRoad();
   checkInputs();
   drawPlayer();
+  drawEnemy();
 };
 
 void stateGamePause()

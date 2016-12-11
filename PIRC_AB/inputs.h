@@ -105,6 +105,12 @@ void checkInputs()
       player.speed_cnt--;
     }
   }
+
+  if (player.isClash)
+  {
+    player.speed = 0;
+    player.speed_cnt = 30;
+  }
   
   if (arduboy.justPressed(B_BUTTON))
   {
@@ -112,6 +118,7 @@ void checkInputs()
     if (player.type > 5) player.type = 0;
   }
 
+  player.rect.x = player.x;
   player.rect.y = player.y;
 }
 
