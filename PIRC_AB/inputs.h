@@ -6,18 +6,6 @@
 #include "cars.h"
 #include "road.h"
 
-void upCar(uint8_t yy)
-{
-  player.frame = carTypes[player.type];
-  player.y = player.y - yy;
-}
-
-void downCar(uint8_t yy)
-{
-  player.frame = carTypes[player.type] + 2;
-  player.y = player.y + yy;
-}
-
 void checkInputs()
 {
   player.frame = carTypes[player.type] + 1;
@@ -27,20 +15,22 @@ void checkInputs()
     if (arduboy.pressed(UP_BUTTON) && (player.y > GAME_TOP))
     {
       if (player.isMoveUp) {
-        upCar(1);
+        player.frame = carTypes[player.type];
+        player.y = player.y - 1;
       }
     }
     if (arduboy.pressed(DOWN_BUTTON) && (player.y < GAME_BOTTOM))
     {
       if (player.isMoveDown) {
-        downCar(1);
+        player.frame = carTypes[player.type] + 2;
+        player.y = player.y + 1;
       }      
     }
   }
 
   if (arduboy.pressed(A_BUTTON))
   {
-    if (player.speed < 6 && player.speed_cnt == 0)
+    if (player.speed < 6 && player.speed_cnt == 0 && !player.isClash)
     {
       player.speed_cnt = 20;
       
@@ -61,10 +51,6 @@ void checkInputs()
         } 
       }
     }
-    if (player.speed_cnt > 0)
-    {
-      player.speed_cnt--;
-    }
   }
 
   if (arduboy.notPressed(A_BUTTON))
@@ -73,10 +59,6 @@ void checkInputs()
     {
       player.speed--;
       player.speed_cnt = 15;
-    }
-    if (player.speed_cnt > 0)
-    {
-      player.speed_cnt--;
     }
   }
 
@@ -87,10 +69,6 @@ void checkInputs()
       player.speed--;
       player.speed_cnt = 40;
     }
-    if (player.speed_cnt > 0)
-    {
-      player.speed_cnt--;
-    }
   }  
   else
   if (player.isSlow)
@@ -100,26 +78,39 @@ void checkInputs()
       player.speed--;
       player.speed_cnt = 40;
     }
-    if (player.speed_cnt > 0)
-    {
-      player.speed_cnt--;
-    }
   }
 
+  // Clash -> Effect
   if (player.isClash)
   {
-    player.speed = 0;
-    player.speed_cnt = 30;
+    if (player.speed > 0)
+    {
+      player.speed = 0;
+      player.speed_cnt = 25;
+    }
+  
+    if (player.speed_cnt > 0)
+    {
+      if (player.speed_cnt % 2)
+      {
+        player.y = player.y + 2;
+      }
+      else
+      {
+        player.y = player.y - 2;
+      }
+    }
+    else
+    {
+      player.isClash = false;
+    }
   }
   
-  if (arduboy.justPressed(B_BUTTON))
+  if (player.speed_cnt > 0)
   {
-    player.type++;
-    if (player.type > 5) player.type = 0;
+    player.speed_cnt--;
   }
 
-  player.rect.x = player.x;
-  player.rect.y = player.y;
 }
 
 #endif

@@ -33,7 +33,6 @@ struct Players
     boolean isSlow;
     boolean isSlowest;
     boolean isClash;
-    Rect rect;
 
     void set()
     {
@@ -49,10 +48,6 @@ struct Players
       isSlow = false;
       isSlowest = false;
       isClash = false;
-      rect.x = x;
-      rect.y = y;
-      rect.width = CAR_WIDTH;
-      rect.height = CAR_HEIGHT;
     }
 };
 
@@ -68,16 +63,17 @@ struct Enemys
   public:
     int x;
     int y;
-    Rect rect;
+    byte move_cnt;
+    boolean isMoveUp;
+    boolean isMoveDown;
 
     void set()
     {
       x = 128;
       y = 28;
-      rect.x = x;
-      rect.y = y;
-      rect.width = CAR_WIDTH;
-      rect.height = CAR_HEIGHT;
+      isMoveUp = true;
+      isMoveDown = false;
+      move_cnt = 0;
     }
 };
 
@@ -86,7 +82,34 @@ Enemys enemy;
 void drawEnemy()
 {
   //test
-  sprites.drawPlusMask(enemy.x, enemy.y, cars_plus_mask, 1);
+  sprites.drawPlusMask(enemy.x, enemy.y, cars_plus_mask, carTypes[ CAR_TYPE_TWO ] + 1);
+
+  if (enemy.y < 20)
+  {
+    enemy.isMoveUp = false;
+    enemy.isMoveDown = true;
+  }
+  if (enemy.y > 44)
+  {
+    enemy.isMoveUp = true;
+    enemy.isMoveDown = false;
+  }
+
+  if (enemy.isMoveUp && enemy.move_cnt == 0)
+  {
+    enemy.y--;
+    enemy.move_cnt = 3;
+  }
+  if (enemy.isMoveDown && enemy.move_cnt == 0)
+  {
+    enemy.y++;
+    enemy.move_cnt = 3;
+  }
+
+  if (enemy.move_cnt > 0)
+  {
+    enemy.move_cnt--;
+  }
 }
 
 #endif

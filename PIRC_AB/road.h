@@ -226,8 +226,8 @@ void drawRoadParts(int16_t x, int16_t y, uint8_t id)
       }
       else
       {
-        arduboy.drawBitmap(xx, yy, roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE)
-        , ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
+        arduboy.drawBitmap(xx, yy, roadMaterialData + ((road_part - 1) * ROAD_MATERIAL_SIZE), 
+        ROAD_MATERIAL_SIZE, ROAD_MATERIAL_SIZE, WHITE);
 
         if (xx >= 8 && (xx <= (player.x + CAR_WIDTH)) &&
         (pgm_read_word_near(roadMaterialCollisionData + (road_part - 1)) != 0))
@@ -268,7 +268,6 @@ void drawRoad()
   player.isMoveDown = true;
   player.isSlow = false;
   player.isSlowest = false;
-  player.isClash = false;
   road.rect_cnt = 0;
 
   if (road.len == 0)
@@ -297,7 +296,7 @@ void drawRoad()
 
   for (uint8_t i = 0; i < road.rect_cnt; i++)
   {
-    if (roadCollide(player.rect, road.rect[i]))
+    if (roadCollide({.x = player.x, .y = player.y, .width = CAR_WIDTH, .height = CAR_HEIGHT}, road.rect[i]))
     {
       if (road.rect[i].isSlowest)
       {
@@ -312,7 +311,8 @@ void drawRoad()
   }  
 
   //test
-  if (arduboy.collide(player.rect, enemy.rect))
+  if (arduboy.collide({.x = player.x, .y = player.y, .width = CAR_WIDTH, .height = CAR_HEIGHT}, 
+  {.x = enemy.x, .y = enemy.y, .width = CAR_WIDTH, .height = CAR_HEIGHT}))
   {
     player.isClash = true;
   }
@@ -331,7 +331,6 @@ void drawRoad()
   if (enemy.x < -16) {
     enemy.x = 128;
   }
-  enemy.rect.x = enemy.x;
 }
 
 #endif
