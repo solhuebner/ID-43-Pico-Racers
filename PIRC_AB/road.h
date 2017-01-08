@@ -168,7 +168,7 @@ PROGMEM const uint16_t roadMaterialCollisionData[] = {
 // 0x0000
 //   |||+ height 1-8
 //   ||+- width 1-8  
-//   |+-- y 0-7 + 0b1000 (slowest flag) 
+//   |+-- y 0-7 + 0b1000 (Slowest flag) 
 //   +--- x 0-7 + 0b1000 (Slow flag) 
         0x0888, 0x0885, 0x0883, 0x0881, 0x0883, 0x0a86, 0x0c84, 
 0x0e82, 0x0c84, 0x0000, 0x0000, 0x0000, 0x0000, 0x8084, 0x8084, 
@@ -192,8 +192,8 @@ struct Road
   public:
   uint8_t pos;
   uint8_t len;
-  int16_t cnt;
-  uint8_t add_cnt;
+  uint8_t cnt;
+  int x;
   RoadRect rect[32];
   int16_t rect_cnt;
 
@@ -202,7 +202,6 @@ struct Road
     pos = 0;
     len = 0;
     cnt = 0;
-    add_cnt = 0;
     rect_cnt = 0;
   }
 };
@@ -263,7 +262,8 @@ bool roadCollide(Rect rect1, RoadRect rect2)
 
 void drawRoad()
 {
-  road.cnt = road.cnt + road.add_cnt;
+  road.cnt = road.cnt + player.speed;
+  road.x = road.x + player.speed;
   player.isMoveUp = true;
   player.isMoveDown = true;
   player.isSlow = false;
@@ -291,6 +291,7 @@ void drawRoad()
     if (road.pos > (road.len - ROAD_PARTS_BLOCKS))
     {
       road.pos = 1;
+      road.x = 0;
     }
   }
 

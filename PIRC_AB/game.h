@@ -22,7 +22,7 @@ void stateGameNextLevel()
   gameState = STATE_GAME_PLAYING;
   player.set();
   enemy.set();
-  powerUp.set();
+  setPowerUp();
 };
 
 

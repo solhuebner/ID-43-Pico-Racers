@@ -11,7 +11,6 @@
 
 void drawTheRoad()
 {
-  road.add_cnt = player.speed;
   drawRoad();
 }
 

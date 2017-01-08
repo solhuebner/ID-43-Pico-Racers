@@ -61,13 +61,13 @@ void checkInputs()
       player.speed_cnt = 15;
     }
   }
-
+/*
   if (arduboy.justPressed(B_BUTTON))
   {
     powerUp.type++;
     if (powerUp.type > AMOUNT_OF_POWER_UPS - 1) powerUp.type = 0;
   }
-
+*/
   if (player.isSlowest)
   {
     if (player.speed > 1 && player.speed_cnt == 0)
